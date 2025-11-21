@@ -125,7 +125,6 @@ public class Main {
         File f = new File(filename);
         return f.exists() && f.canRead();
     }
-
     //Option 5 method
     private static void displayMarketValuePerCapita(ProjectData pd, java.util.Scanner sc) {
         System.out.print("Enter ZIP Code: ");
