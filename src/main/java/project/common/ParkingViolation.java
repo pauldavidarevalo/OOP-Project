@@ -1,36 +1,48 @@
 package project.common;
 
 public class ParkingViolation {
-    private final String ticketNumber;
     private final String issueDate;
-    private final String violationCode;
     private final double fine;
+    private final String description;
+    private final String vehicleId;
+    private final String state;
+    private final String violationId;
     private final String zipCode;
 
-    public ParkingViolation(String ticketNumber, String issueDate,
-                            String violationCode, double fine, String zipCode) {
-        this.ticketNumber = ticketNumber;
+    public ParkingViolation(String issueDate, double fine, String description,
+                            String vehicleId, String state,
+                            String violationId, String zipCode) {
         this.issueDate = issueDate;
-        this.violationCode = violationCode;
         this.fine = fine;
+        this.description = description;
+        this.vehicleId = vehicleId;
+        this.state = state;
+        this.violationId = violationId;
         this.zipCode = zipCode;
+
     }
 
-    public String getTicketNumber() { return ticketNumber;}
     public String getIssueDate() { return issueDate;}
-    public String getViolationCode() { return violationCode;}
     public double getFine() { return fine; }
+    public String getDescription() { return description;}
+    public String getVehicleId() { return vehicleId; }
+    public String getState() { return state; }
+    public String getViolationId() { return violationId; }
     public String getZipCode() { return zipCode; }
+
 
     @Override
     public String toString() {
         return "ParkingViolation{" +
-                "ticketNumber='" + ticketNumber + '\'' +
-                ", date='" + issueDate + '\'' +
-                ", violationCode='" + violationCode + '\'' +
-                ", fineAmount=" + fine +
-                ", zip='" + zipCode + '\'' +
+                "issueDate='" + issueDate + '\'' +
+                ", fine=" + fine +
+                ", description='" + description + '\'' +
+                ", vehicleId='" + vehicleId + '\'' +
+                ", state='" + state + '\'' +
+                ", violationId='" + violationId + '\'' +
+                ", zipCode='" + zipCode + '\'' +
                 '}';
+
     }
 
 }
