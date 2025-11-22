@@ -95,12 +95,12 @@ public class Main {
                     case 1:
                         TotalPopulationProcessor totalProcessor = new TotalPopulationProcessor(pd);
                         int totalPopulation = totalProcessor.run();
-                        ui.displayOneItem(totalPopulation);
+                        ui.displaySingle(totalPopulation);
                         break;
                     case 2:
                         FinesPerCapitaProcessor finesProcessor = new FinesPerCapitaProcessor(pd);
                         Map<String, Double> finesPerCapita = finesProcessor.run();
-                        ui.displayTwoItems(finesPerCapita);
+                        ui.displayPairs(finesPerCapita);
                         break;
                     case 3:
                         break;
