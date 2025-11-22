@@ -28,11 +28,13 @@ public class CsvReader {
                 String[] parts = line.split(",");
                 if (parts.length < 7) continue;
                 ParkingViolation pv = new ParkingViolation(
-                        parts[5].trim(),
-                        parts[0].trim(),
-                        parts[2].trim(),
-                        Double.parseDouble(parts[1].trim()),
-                        parts[6].length() >= 5 ? parts[6].substring(0, 5) : parts[6]
+                        parts[0].trim(), //issueDate
+                        Double.parseDouble(parts[1].trim()), //fine
+                        parts[2].trim(), //description
+                        parts[3].trim(), //vehicleId
+                        parts[4].trim(), //state
+                        parts[5].trim(), //violationId
+                        parts[6].length() >= 5 ? parts[6].substring(0, 5) : parts[6] //zipCode
                 );
                 result.add(pv);
             }

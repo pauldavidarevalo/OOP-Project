@@ -19,14 +19,25 @@ public class JsonReader {
             for (Object o : arr){
                 JSONObject ticket = (JSONObject) o;
 
+                String issueDate = (String) ticket.get("date");
+                double fine = ((Number) ticket.get("fine")).doubleValue();
+                String description = (String) ticket.get("violation");
+                String vehicleId = (String) ticket.get("plate_id");
+                String state = (String) ticket.get("state");
+                String violationId = String.valueOf(ticket.get("ticket_number"));
+                String rawZip = ticket.get("zip_code") != null
+                        ? ticket.get("zip_code").toString().trim()
+                        : "";
+                String zip = rawZip.length() >= 5 ? rawZip.substring(0, 5) : rawZip;
+
                 ParkingViolation pv = new ParkingViolation(
-                        String.valueOf(ticket.get("ticket_number")),
-                        (String) ticket.get("date"),
-                        (String) ticket.get("violation"),
-                        Double.parseDouble(ticket.get("fine").toString()),
-                        ticket.get("zip_code") != null
-                            ? ticket.get("zip_code").toString().substring(0, Math.min(5, ticket.get("zip_code").toString().length()))
-                                : ""
+                        issueDate,
+                        fine,
+                        description,
+                        vehicleId,
+                        state,
+                        violationId,
+                        zip
                 );
                 result.add(pv);
             }
