@@ -6,13 +6,9 @@ import project.common.PropertyValue;
 import project.data.TextReader;
 import project.data.JsonReader;
 import project.data.CsvReader;
-import project.processor.*;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
 
@@ -77,8 +73,8 @@ public class Main {
                 System.out.println("3 - Average residential market value");
                 System.out.println("4 - Average residential total livable area");
                 System.out.println("5 - Residential market value per capita");
-                System.out.println("6 - ???");
-                System.out.println("7 - ???");
+                System.out.println("6 - Top N ZIP codes by total fines (PA only)");
+                System.out.println("7 - Percentage of violations by state");
                 System.out.println("0 - Exit:");
                 System.out.println("Enter choice: ");
 
@@ -93,14 +89,8 @@ public class Main {
 
                 switch (choice) {
                     case 1:
-                        TotalPopulationProcessor totalProcessor = new TotalPopulationProcessor(pd);
-                        int totalPopulation = totalProcessor.run();
-                        ui.displaySingle(totalPopulation);
                         break;
                     case 2:
-                        FinesPerCapitaProcessor finesProcessor = new FinesPerCapitaProcessor(pd);
-                        Map<String, Double> finesPerCapita = finesProcessor.run();
-                        ui.displayPairs(finesPerCapita);
                         break;
                     case 3:
                         break;
@@ -110,8 +100,10 @@ public class Main {
                         displayMarketValuePerCapita(pd, sc);
                         break;
                     case 6:
+                        displayTopNZipCodeByFines(pd, sc);
                         break;
                     case 7:
+                        displayPercentageByState(pd);
                         break;
                     case 0:
                         System.out.println("Exiting.");
@@ -156,6 +148,81 @@ public class Main {
         }
 
         System.out.println("Residential market value per capita for ZIP " + zip + ": " + valuePerCapita);
+    }
+
+    //Option 6 method
+    private static void displayTopNZipCodeByFines(ProjectData pd, Scanner sc) {
+        System.out.print("Enter N (max 50):");
+        int N;
+        try {
+            N = Integer.parseInt(sc.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number.");
+            return;
+        }
+
+        if (N <= 0) {
+            System.out.println("N must be a positive integer.");
+            return;
+        }
+        if (N > 50) {
+            System.out.println("N too large - limiting to 50.");
+            N = 50;
+        }
+
+        //aggregate total fines by ZIP for PA plates
+        HashMap<String, Double> zipTotals = new HashMap<>();
+
+        for (ParkingViolation pv : pd.getParkingViolations()) {
+            if (pv.getState() == null || pv.getZipCode() == null) continue;
+            if (!pv.getState().equalsIgnoreCase("PA")) continue;
+            if (pv.getZipCode().isEmpty()) continue;
+
+            zipTotals.put(
+                    pv.getZipCode(),
+                    zipTotals.getOrDefault(pv.getZipCode(), 0.0) + pv.getFine()
+            );
+        }
+
+        //Sort descending by total fines
+        List<HashMap.Entry<String, Double>> sorted = new java.util.ArrayList<>(zipTotals.entrySet());
+
+        sorted.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
+
+        System.out.println("\nTop " + N + " ZIP Codes by Total Fines:");
+        for (int i = 0; i < Math.min(N, sorted.size()); i++) {
+            var entry = sorted.get(i);
+            System.out.printf("%s $%.2f%n", entry.getKey(), entry.getValue());
+        }
+    }
+
+    //Option 7 method
+    private static void displayPercentageByState(ProjectData pd) {
+        HashMap<String, Integer> counts = new HashMap<>();
+
+        for (ParkingViolation pv : pd.getParkingViolations()) {
+            String state = pv.getState();
+            if (state == null || state.trim().isEmpty()) continue;
+
+            state = state.trim();
+            counts.put(state, counts.getOrDefault(state, 0) + 1);
+        }
+
+        int total = pd.getParkingViolations().size();
+        if (total == 0) {
+            System.out.println("No violation data loaded.");
+            return;
+        }
+
+        //Sort states by descending count
+        List<Map.Entry<String, Integer>> list = new ArrayList<>(counts.entrySet());
+        list.sort((a, b) -> b.getValue().compareTo(a.getValue()));
+
+        System.out.println("\nPercentage of Violations by State:");
+        for (Map.Entry<String, Integer> e : list) {
+            double pct = (100.0 * e.getValue()) / total;
+            System.out.printf("%-5s : %.2f%%%n", e.getKey(), pct);
+        }
     }
 }
 
