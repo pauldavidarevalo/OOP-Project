@@ -6,10 +6,12 @@ import project.common.PropertyValue;
 import project.data.TextReader;
 import project.data.JsonReader;
 import project.data.CsvReader;
+import project.processor.*;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -91,8 +93,14 @@ public class Main {
 
                 switch (choice) {
                     case 1:
+                        TotalPopulationProcessor totalProcessor = new TotalPopulationProcessor(pd);
+                        int totalPopulation = totalProcessor.run();
+                        ui.displayOneItem(totalPopulation);
                         break;
                     case 2:
+                        FinesPerCapitaProcessor finesProcessor = new FinesPerCapitaProcessor(pd);
+                        Map<String, Double> finesPerCapita = finesProcessor.run();
+                        ui.displayTwoItems(finesPerCapita);
                         break;
                     case 3:
                         break;
