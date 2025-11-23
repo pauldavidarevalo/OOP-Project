@@ -111,13 +111,39 @@ public class Main {
                     case 4:
                         break;
                     case 5:
-                        displayMarketValuePerCapita(pd, sc);
+                        System.out.print("Enter ZIP Code: ");
+                        sc.nextLine();
+                        String zip = sc.nextLine().trim();
+                        MarketValuePerCapitaProcessor processor = new MarketValuePerCapitaProcessor(pd);
+                        int value = processor.run(zip);
+                        ui.displaySingle(value);
                         break;
                     case 6:
-                        displayTopNZipCodeByFines(pd, sc);
+                        System.out.print("Enter N (max 50):");
+                        int N;
+                        try {
+                            N = Integer.parseInt(sc.nextLine().trim());
+                        } catch (NumberFormatException e) {
+                            System.out.println("Invalid number.");
+                            return;
+                        }
+
+                        if (N <= 0) {
+                            System.out.println("N must be a positive integer.");
+                            return;
+                        }
+                        if (N > 50) {
+                            System.out.println("N too large - limiting to 50.");
+                            N = 50;
+                        }
+                        TopNZipCodeByFinesProcessor processor = new TopNZipCodeByFinesProcessor(pd);
+                        List<Map.Entry<String, Double>> result = processor.run(N);
+                        ui.displayPairs(result);
                         break;
                     case 7:
-                        displayPercentageByState(pd);
+                        PercentageByStateProcessor processor = new PercentageByStateProcessor(pd);
+                        Map<String, Double> result = processor.run();
+                        ui.displayPairs(result);
                         break;
                     case 0:
                         System.out.println("Exiting.");
@@ -139,105 +165,7 @@ public class Main {
         File f = new File(filename);
         return f.exists() && f.canRead();
     }
-    //Option 5 method
-    private static void displayMarketValuePerCapita(ProjectData pd, java.util.Scanner sc) {
-        System.out.print("Enter ZIP Code: ");
-        String zip = sc.nextLine().trim();
 
-        //compute total market value for this zip
-        double totalMarketValue = 0.0;
-        for (PropertyValue pv : pd.getPropertyValues()) {
-            if (zip.equals(pv.getZipCode()) && pv.getMarketValue() > 0) {
-                totalMarketValue += pv.getMarketValue();
-            }
-        }
-
-        //get population for this ZIP
-        int population = pd.getZipPopulation().getOrDefault(zip, 0);
-
-        //compute market value per capita
-        int valuePerCapita = 0;
-        if (totalMarketValue > 0 && population > 0) {
-            valuePerCapita = (int) Math.round(totalMarketValue / population);
-        }
-
-        System.out.println("Residential market value per capita for ZIP " + zip + ": " + valuePerCapita);
-    }
-
-    //Option 6 method
-    private static void displayTopNZipCodeByFines(ProjectData pd, Scanner sc) {
-        System.out.print("Enter N (max 50):");
-        int N;
-        try {
-            N = Integer.parseInt(sc.nextLine().trim());
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid number.");
-            return;
-        }
-
-        if (N <= 0) {
-            System.out.println("N must be a positive integer.");
-            return;
-        }
-        if (N > 50) {
-            System.out.println("N too large - limiting to 50.");
-            N = 50;
-        }
-
-        //aggregate total fines by ZIP for PA plates
-        HashMap<String, Double> zipTotals = new HashMap<>();
-
-        for (ParkingViolation pv : pd.getParkingViolations()) {
-            if (pv.getState() == null || pv.getZipCode() == null) continue;
-            if (!pv.getState().equalsIgnoreCase("PA")) continue;
-            if (pv.getZipCode().isEmpty()) continue;
-
-            zipTotals.put(
-                    pv.getZipCode(),
-                    zipTotals.getOrDefault(pv.getZipCode(), 0.0) + pv.getFine()
-            );
-        }
-
-        //Sort descending by total fines
-        List<HashMap.Entry<String, Double>> sorted = new java.util.ArrayList<>(zipTotals.entrySet());
-
-        sorted.sort((a, b) -> Double.compare(b.getValue(), a.getValue()));
-
-        System.out.println("\nTop " + N + " ZIP Codes by Total Fines:");
-        for (int i = 0; i < Math.min(N, sorted.size()); i++) {
-            var entry = sorted.get(i);
-            System.out.printf("%s $%.2f%n", entry.getKey(), entry.getValue());
-        }
-    }
-
-    //Option 7 method
-    private static void displayPercentageByState(ProjectData pd) {
-        HashMap<String, Integer> counts = new HashMap<>();
-
-        for (ParkingViolation pv : pd.getParkingViolations()) {
-            String state = pv.getState();
-            if (state == null || state.trim().isEmpty()) continue;
-
-            state = state.trim();
-            counts.put(state, counts.getOrDefault(state, 0) + 1);
-        }
-
-        int total = pd.getParkingViolations().size();
-        if (total == 0) {
-            System.out.println("No violation data loaded.");
-            return;
-        }
-
-        //Sort states by descending count
-        List<Map.Entry<String, Integer>> list = new ArrayList<>(counts.entrySet());
-        list.sort((a, b) -> b.getValue().compareTo(a.getValue()));
-
-        System.out.println("\nPercentage of Violations by State:");
-        for (Map.Entry<String, Integer> e : list) {
-            double pct = (100.0 * e.getValue()) / total;
-            System.out.printf("%-5s : %.2f%%%n", e.getKey(), pct);
-        }
-    }
 }
 
 
