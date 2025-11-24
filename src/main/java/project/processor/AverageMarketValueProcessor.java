@@ -10,7 +10,7 @@ public class AverageMarketValueProcessor {
         this.projectData = pd;
     }
 
-    public double run() {
+    public double run(String zip) {
         double totalMarketValue = 0.0;
         int count = 0;
 
@@ -25,6 +25,11 @@ public class AverageMarketValueProcessor {
             try {
                 if(pv == null) continue;                 // guard null entries
                 double marketValue = pv.getMarketValue();
+                String pvZip = pv.getZipCode();
+                // Check zip code match
+                if (pvZip == null || !pvZip.equals(zip)) {
+                    continue;
+                }
                 // Consider only positive market values
                 if (marketValue > 0.0) {
                     totalMarketValue += marketValue;
