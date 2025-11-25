@@ -107,8 +107,20 @@ public class Main {
                         ui.displayPairs(finesPerCapita);
                         break;
                     case 3:
+                        AverageMarketValueProcessor avgMarketProcessor = new AverageMarketValueProcessor(pd);
+                        System.out.print("Enter ZIP Code: ");
+                        sc.nextLine();
+                        String zipCode = sc.nextLine().trim();
+                        int avgMarketValue = avgMarketProcessor.run(zipCode);
+                        ui.displaySingle(avgMarketValue);
                         break;
                     case 4:
+                        AverageLivableAreaProcessor avgLivableProcessor = new AverageLivableAreaProcessor(pd);
+                        System.out.print("Enter ZIP Code: ");
+                        sc.nextLine();
+                        String zipLivable = sc.nextLine().trim();
+                        int avgLivableArea = avgLivableProcessor.run(zipLivable);
+                        ui.displaySingle(avgLivableArea);
                         break;
                     case 5:
                         System.out.print("Enter ZIP Code: ");
