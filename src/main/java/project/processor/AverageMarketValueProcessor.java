@@ -10,7 +10,8 @@ public class AverageMarketValueProcessor {
         this.projectData = pd;
     }
 
-    public double run(String zip) {
+    // Could make this just run() and have zip as constructor arg, but this is more flexible for testing
+    public int run(String zip) {
         double totalMarketValue = 0.0;
         int count = 0;
 
@@ -43,9 +44,10 @@ public class AverageMarketValueProcessor {
         }
 
         if (count == 0) {
-            return 0.0; // avoid division by zero
+            return 0; // avoid division by zero
         }
 
-        return totalMarketValue / count;
+        return (int) Math.round(totalMarketValue / count);
     }
+
 }
