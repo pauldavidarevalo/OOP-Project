@@ -2,6 +2,9 @@ package project.processor;
 
 import project.common.*;
 import java.util.List;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.HashSet;
 
 // Only needed for testing purposes
 // ----------------------------------------------------------
@@ -17,7 +20,7 @@ public class AverageMarketValueProcessor {
     }
 
     // Could make this just run() and have zip as constructor arg, but this is more flexible for testing
-    public int run(String zip) {
+    public int run(String... zips) {
         double totalMarketValue = 0.0;
         int count = 0;
 
@@ -28,13 +31,15 @@ public class AverageMarketValueProcessor {
             return 0;
         }
 
+        Set<String> zipSet = new HashSet<>(Arrays.asList(zips));
+
         for (PropertyValue pv : propertyValues) {
             try {
                 if(pv == null) continue;                 // guard null entries
                 double marketValue = pv.getMarketValue();
                 String pvZip = pv.getZipCode();
                 // Check zip code match
-                if (pvZip == null || !pvZip.equals(zip)) {
+                if (pvZip == null || !zipSet.contains(pvZip)) {
                     continue;
                 }
                 // Consider only positive market values

@@ -108,10 +108,11 @@ public class Main {
                         break;
                     case 3:
                         AverageMarketValueProcessor avgMarketProcessor = new AverageMarketValueProcessor(pd);
-                        System.out.print("Enter ZIP Code: ");
-                        sc.nextLine();
-                        String zipCode = sc.nextLine().trim();
-                        int avgMarketValue = avgMarketProcessor.run(zipCode);
+                        System.out.print("Enter one or more ZIP Codes separated by commas: ");
+                        // sc.nextLine();
+                        String zipCodes = sc.nextLine().trim();
+                        String[] zipArray = zipCodes.split(",");
+                        int avgMarketValue = avgMarketProcessor.run(zipArray);
                         ui.displaySingle(avgMarketValue);
                         break;
                     case 4:
