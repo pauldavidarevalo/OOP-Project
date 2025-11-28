@@ -3,6 +3,7 @@ package project;
 import project.common.ProjectData;
 import project.common.ParkingViolation;
 import project.common.PropertyValue;
+import project.data.ParkingViolationReader;
 import project.data.TextReader;
 import project.data.JsonReader;
 import project.data.CsvReader;
@@ -47,12 +48,13 @@ public class Main {
 
         try {
             // Load parking violations
-            List<ParkingViolation> parkingViolations;
+            ParkingViolationReader reader;
             if (format.equals("csv")) {
-                parkingViolations = CsvReader.readParkingViolations(parkingFile);
+                reader = new CsvReader();
             } else {
-                parkingViolations = JsonReader.readParkingViolations(parkingFile);
+                reader = new JsonReader();
             }
+            List<ParkingViolation> parkingViolations = reader.readParkingViolations(parkingFile);
 
             // Load property values
             List<PropertyValue> propertyValues =
@@ -68,6 +70,8 @@ public class Main {
                     propertyValues,
                     zipPopulation
             );
+            //create the processor once for option 5; for memoization...
+            MarketValuePerCapitaProcessor marketValuePerCapitaprocessor = new MarketValuePerCapitaProcessor(pd);
 
             /**  Menu Functionality Begins
             ProcessorA.run(pd);
@@ -127,8 +131,7 @@ public class Main {
                         System.out.print("Enter ZIP Code: ");
                         sc.nextLine();
                         String zip = sc.nextLine().trim();
-                        MarketValuePerCapitaProcessor processor = new MarketValuePerCapitaProcessor(pd);
-                        int value = processor.run(zip);
+                        int value = marketValuePerCapitaprocessor.run(zip);
                         ui.displaySingle(value);
                         break;
                     case 6:
@@ -149,14 +152,14 @@ public class Main {
                             System.out.println("N too large - limiting to 50.");
                             N = 50;
                         }
-                        TopNZipCodeByFinesProcessor processor = new TopNZipCodeByFinesProcessor(pd);
-                        List<Map.Entry<String, Double>> result = processor.run(N);
-                        ui.displayPairs(result);
+                        TopNZipCodeByFinesProcessor topNZipCodeByFinesprocessor = new TopNZipCodeByFinesProcessor(pd);
+                        List<Map.Entry<String, Double>> topNZipCodeByFines = topNZipCodeByFinesprocessor.run(N);
+                        ui.displayPairs(topNZipCodeByFines);
                         break;
                     case 7:
-                        PercentageByStateProcessor processor = new PercentageByStateProcessor(pd);
-                        Map<String, Double> result = processor.run();
-                        ui.displayPairs(result);
+                        PercentageByStateProcessor percentageByStateProcessor = new PercentageByStateProcessor(pd);
+                        Map<String, Double> percentageByState = percentageByStateProcessor.run();
+                        ui.displayPairs(percentageByState);
                         break;
                     case 0:
                         System.out.println("Exiting.");
