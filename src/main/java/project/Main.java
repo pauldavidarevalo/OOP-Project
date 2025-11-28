@@ -3,19 +3,11 @@ package project;
 import project.common.ProjectData;
 import project.common.ParkingViolation;
 import project.common.PropertyValue;
-import project.data.ParkingViolationReader;
-import project.data.TextReader;
-import project.data.JsonReader;
-import project.data.CsvReader;
+import project.data.*;
 import project.processor.*;
+import project.ui.UI;
 
 import java.io.File;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-
 import java.util.*;
 
 
@@ -71,95 +63,63 @@ public class Main {
                     zipPopulation
             );
             //create the processor once for option 5; for memoization...
-            MarketValuePerCapitaProcessor marketValuePerCapitaprocessor = new MarketValuePerCapitaProcessor(pd);
+            MarketValuePerCapitaProcessor marketValuePerCapitaProcessor = new MarketValuePerCapitaProcessor(pd);
 
-            /**  Menu Functionality Begins
-            ProcessorA.run(pd);
-            ProcessorB.run(pd);
-            */
-            Scanner sc = new Scanner(System.in);
+            //create Singleton UI class
+            UI ui = UI.getInstance();
+
+            /*  Menu Functionality Begins
+
+             **/
             while (true) {
-                System.out.println("\nMain Menu:");
-                System.out.println("1 - Total population");
-                System.out.println("2 - Fines per capita");
-                System.out.println("3 - Average residential market value");
-                System.out.println("4 - Average residential total livable area");
-                System.out.println("5 - Residential market value per capita");
-                System.out.println("6 - Top N ZIP codes by total fines (PA only)");
-                System.out.println("7 - Percentage of violations by state");
-                System.out.println("0 - Exit:");
-                System.out.println("Enter choice: ");
-
-                String input = sc.nextLine().trim();
-                int choice;
-                try {
-                    choice = Integer.parseInt(input);
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid input, try again.");
-                    continue;
-                }
+                ui.displayMenu();
+                int choice = ui.readInt();
 
                 switch (choice) {
                     case 1:
                         TotalPopulationProcessor totalProcessor = new TotalPopulationProcessor(pd);
                         int totalPopulation = totalProcessor.run();
-                        ui.displaySingle(totalPopulation);
+                        ui.displaySingle("\nTotal Population for all zip codes is:",
+                                totalPopulation);
                         break;
                     case 2:
                         FinesPerCapitaProcessor finesProcessor = new FinesPerCapitaProcessor(pd);
                         Map<String, Double> finesPerCapita = finesProcessor.run();
-                        ui.displayPairs(finesPerCapita);
+                        ui.displayPairs("\nFines Per Capita for each zip code:",
+                                finesPerCapita);
                         break;
                     case 3:
                         AverageMarketValueProcessor avgMarketProcessor = new AverageMarketValueProcessor(pd);
-                        System.out.print("Enter one or more ZIP Codes separated by commas: ");
-                        // sc.nextLine();
-                        String zipCodes = sc.nextLine().trim();
-                        String[] zipArray = zipCodes.split(",");
+                        String[] zipArray = ui.getMultipleZips();
                         int avgMarketValue = avgMarketProcessor.run(zipArray);
-                        ui.displaySingle(avgMarketValue);
+                        ui.displaySingle("\nAverage Residential Market Value for this area is:",
+                                avgMarketValue);
                         break;
                     case 4:
                         AverageLivableAreaProcessor avgLivableProcessor = new AverageLivableAreaProcessor(pd);
-                        System.out.print("Enter ZIP Code: ");
-                        sc.nextLine();
-                        String zipLivable = sc.nextLine().trim();
+                        String zipLivable = ui.getSingleZip();
                         int avgLivableArea = avgLivableProcessor.run(zipLivable);
-                        ui.displaySingle(avgLivableArea);
+                        ui.displaySingle("\nAverage Residential Livable Area for this zip code is:",
+                                avgLivableArea);
                         break;
                     case 5:
-                        System.out.print("Enter ZIP Code: ");
-                        sc.nextLine();
-                        String zip = sc.nextLine().trim();
-                        int value = marketValuePerCapitaprocessor.run(zip);
-                        ui.displaySingle(value);
+                        String zip = ui.getSingleZip();
+                        int valuePerCap = marketValuePerCapitaProcessor.run(zip);
+                        ui.displaySingle("\nMarket Value Per Capita for this zip code is:",
+                                valuePerCap);
                         break;
                     case 6:
-                        System.out.print("Enter N (max 50):");
-                        int N;
-                        try {
-                            N = Integer.parseInt(sc.nextLine().trim());
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid number.");
-                            return;
-                        }
-
-                        if (N <= 0) {
-                            System.out.println("N must be a positive integer.");
-                            return;
-                        }
-                        if (N > 50) {
-                            System.out.println("N too large - limiting to 50.");
-                            N = 50;
-                        }
-                        TopNZipCodeByFinesProcessor topNZipCodeByFinesprocessor = new TopNZipCodeByFinesProcessor(pd);
-                        List<Map.Entry<String, Double>> topNZipCodeByFines = topNZipCodeByFinesprocessor.run(N);
-                        ui.displayPairs(topNZipCodeByFines);
+                        TopNZipCodeByFinesProcessor topNZipProcessor = new TopNZipCodeByFinesProcessor(pd);
+                        int N = ui.promptForN();
+                        List<Map.Entry<String, Double>> topZips = topNZipProcessor.run(N);
+                        ui.displayPairs("\nTop Zip Codes by Fines:",
+                                topZips);
                         break;
                     case 7:
-                        PercentageByStateProcessor percentageByStateProcessor = new PercentageByStateProcessor(pd);
-                        Map<String, Double> percentageByState = percentageByStateProcessor.run();
-                        ui.displayPairs(percentageByState);
+                        PercentageByStateProcessor byStateProcessor = new PercentageByStateProcessor(pd);
+                        Map<String, Double> resultByState = byStateProcessor.run();
+                        ui.displayPairs("\nPercentage of Fines per state:",
+                                resultByState);
                         break;
                     case 0:
                         System.out.println("Exiting.");
