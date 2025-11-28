@@ -5,11 +5,12 @@ import org.json.simple.parser.JSONParser;
 import java.io.*;
 import java.util.*;
 
-public class JsonReader {
+public class JsonReader implements ParkingViolationReader {
     /** make the method static so no instance is needed and with filename as parameter
 
      */
-    public static List<ParkingViolation> readParkingViolations(String path) {
+    @Override
+    public List<ParkingViolation> readParkingViolations(String path) {
         List<ParkingViolation> result = new ArrayList<>();
         JSONParser parser  = new JSONParser();
 

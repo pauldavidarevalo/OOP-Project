@@ -9,7 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class CsvReader {
+public class CsvReader implements ParkingViolationReader {
     /** method to read parking violations in csv
      *
      * method to read property values in csv which figures out the correct
@@ -17,7 +17,8 @@ public class CsvReader {
      *
      * make the methods static so no instance is needed and with filename as parameter
      */
-    public static List<ParkingViolation> readParkingViolations(String path) {
+    @Override
+    public List<ParkingViolation> readParkingViolations(String path) {
         List<ParkingViolation> result = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
