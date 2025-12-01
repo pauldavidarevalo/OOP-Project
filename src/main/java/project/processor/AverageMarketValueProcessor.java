@@ -34,24 +34,18 @@ public class AverageMarketValueProcessor {
         Set<String> zipSet = new HashSet<>(Arrays.asList(zips));
 
         for (PropertyValue pv : propertyValues) {
-            try {
-                if(pv == null) continue;                 // guard null entries
-                double marketValue = pv.getMarketValue();
-                String pvZip = pv.getZipCode();
-                // Check zip code match
-                if (pvZip == null || !zipSet.contains(pvZip)) {
-                    continue;
-                }
-                // Consider only positive market values
-                if (marketValue > 0.0) {
-                    totalMarketValue += marketValue;
-                    count++;
-                }
-            } catch (Exception e) {
-                // skip malformed entries and continue
+            if(pv == null) continue;                 // guard null entries
+            double marketValue = pv.getMarketValue();
+            String pvZip = pv.getZipCode();
+            // Check zip code match
+            if (pvZip == null || !zipSet.contains(pvZip)) {
                 continue;
             }
-            
+            // Consider only positive market values
+            if (marketValue > 0.0) {
+                totalMarketValue += marketValue;
+                count++;
+            }
         }
 
         if (count == 0) {
