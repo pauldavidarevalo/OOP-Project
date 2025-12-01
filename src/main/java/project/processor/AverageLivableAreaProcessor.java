@@ -30,24 +30,18 @@ public class AverageLivableAreaProcessor {
         }
 
         for (PropertyValue pv : propertyValues) {
-            try {
-                if(pv == null) continue;                 // guard null entries
-                double livableArea = pv.getTotalLivableArea();
-                String pvZip = pv.getZipCode();
-                // Check zip code match
-                if (pvZip == null || !pvZip.equals(zip)) {
-                    continue;
-                }
-                // Consider only positive livable areas
-                if (livableArea > 0.0) {
-                    totalLivableArea += livableArea;
-                    count++;
-                }
-            } catch (Exception e) {
-                // skip malformed entries and continue
+            if(pv == null) continue;                 // guard null entries
+            double livableArea = pv.getTotalLivableArea();
+            String pvZip = pv.getZipCode();
+            // Check zip code match
+            if (pvZip == null || !pvZip.equals(zip)) {
                 continue;
             }
-            
+            // Consider only positive livable areas
+            if (livableArea > 0.0) {
+                totalLivableArea += livableArea;
+                count++;
+            }
         }
 
         if (count == 0) {
