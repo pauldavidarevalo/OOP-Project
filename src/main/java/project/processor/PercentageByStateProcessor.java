@@ -13,9 +13,15 @@ public class PercentageByStateProcessor {
     }
 
     public Map<String, Double> run() {
+        List<ParkingViolation> violations = pd.getParkingViolations();
+        if (violations == null || violations.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
         Map<String, Integer> counts = new HashMap<>();
 
-        for (ParkingViolation pv : pd.getParkingViolations()) {
+        for (ParkingViolation pv : violations) {
+            if (pv == null) continue;
             String state = pv.getState();
             if (state == null || state.trim().isEmpty()) continue;
 
@@ -23,7 +29,7 @@ public class PercentageByStateProcessor {
             counts.put(state, counts.getOrDefault(state, 0) + 1);
         }
 
-        int total = pd.getParkingViolations().size();
+        int total = counts.values().stream().mapToInt(Integer::intValue).sum();
         if (total == 0) {
             return Collections.emptyMap();
         }

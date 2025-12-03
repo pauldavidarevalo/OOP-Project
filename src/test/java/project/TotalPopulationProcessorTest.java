@@ -22,6 +22,48 @@ public class TotalPopulationProcessorTest {
     }
 
     @Test
+    public void zipPopulationIsNull(){
+        ProjectData mockData = new ProjectData(new ArrayList<>(), new ArrayList<>(), new HashMap<>()) {
+            @Override
+            public HashMap<String, Integer> getZipPopulation() {
+                return null;
+            }
+        };
+        TotalPopulationProcessor processor = new TotalPopulationProcessor(mockData);
+        int result = processor.run();
+        assertEquals(0, result);
+    }
+
+    @Test
+    public void zipPopulationIsEmpty(){
+        ProjectData mockData = new ProjectData(new ArrayList<>(), new ArrayList<>(), new HashMap<>()) {
+            @Override
+            public HashMap<String, Integer> getZipPopulation() {
+                return new HashMap<>();
+            }
+        };
+        TotalPopulationProcessor processor = new TotalPopulationProcessor(mockData);
+        int result = processor.run();
+        assertEquals(0, result);
+    }
+    @Test
+    public void  zipPopulationValueIsNull() {
+        HashMap<String, Integer> zipPop = new HashMap<>();
+        zipPop.put("10001", null);
+        zipPop.put("10003", 200);
+        ProjectData mockData = new ProjectData(new ArrayList<>(), new ArrayList<>(), new HashMap<>()) {
+            @Override
+            public HashMap<String, Integer> getZipPopulation() {
+                return zipPop;
+            }
+        };
+        TotalPopulationProcessor processor = new TotalPopulationProcessor(mockData);
+        int result = processor.run();
+        assertEquals(200, result);
+
+    }
+
+    @Test
     public void testRunWithMultipleZips() {
         HashMap<String, Integer> zipPop = new HashMap<>();
         zipPop.put("10001", 5000);
