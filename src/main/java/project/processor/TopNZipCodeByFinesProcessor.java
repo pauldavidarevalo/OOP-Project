@@ -13,18 +13,25 @@ public class TopNZipCodeByFinesProcessor {
     }
 
     public List<Map.Entry<String, Double>> run(int N) {
+        if (N <= 0) return Collections.emptyList();
         //aggregate total fines by ZIP for PA plates
+        List<ParkingViolation> violations = pd.getParkingViolations();
+        if (violations == null || violations.isEmpty()) {
+            return Collections.emptyList();
+        }
         HashMap<String, Double> zipTotals = new HashMap<>();
 
-        for (ParkingViolation pv : pd.getParkingViolations()) {
-            if (pv.getState() == null || pv.getZipCode() == null) continue;
-            if (!pv.getState().equalsIgnoreCase("PA")) continue;
-            if (pv.getZipCode().isEmpty()) continue;
+        for (ParkingViolation pv : violations) {
+            if (pv == null) continue;
 
-            zipTotals.put(
-                    pv.getZipCode(),
-                    zipTotals.getOrDefault(pv.getZipCode(), 0.0) + pv.getFine()
-            );
+            String state = pv.getState();
+            String zip = pv.getZipCode();
+            if (state == null || zip == null) continue;
+            if (!state.equalsIgnoreCase("PA")) continue;
+            if (zip.isEmpty()) continue;
+
+            double fine = pv.getFine();
+            zipTotals.put(zip, zipTotals.getOrDefault(zip, 0.0) + fine);
         }
 
         //Sort descending by total fines

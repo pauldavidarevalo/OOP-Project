@@ -20,6 +20,165 @@ public class FinesPerCapitaProcessorTest {
                 zip
         );
     }
+    @Test
+    public void parkingViolationsListIsNull(){
+        ProjectData pd = new ProjectData(
+                null,
+                null,
+                null
+        );
+        FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(pd);
+        TreeMap<String, Double> result = processor.run();
+        assertTrue(result.isEmpty());
+    }
+    @Test
+    public void parkingViolationsListIsEmpty(){
+        ProjectData pd = new ProjectData(
+                new ArrayList<>(),
+                null,
+                null
+        );
+        FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(pd);
+        TreeMap<String, Double> result = processor.run();
+        assertTrue(result.isEmpty());
+    }
+    @Test
+    public void parkingViolationIsNull(){
+        List<ParkingViolation> violations = new ArrayList<>();
+        violations.add(null);
+        ProjectData pd = new ProjectData(
+                violations,
+                null,
+                null
+        );
+        FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(pd);
+        TreeMap<String, Double> result = processor.run();
+        assertTrue(result.isEmpty());
+    }
+    @Test
+    public void zipPopulationIsNull(){
+        ProjectData mockData = new ProjectData(new ArrayList<>(), new ArrayList<>(), new HashMap<>()) {
+            @Override
+            public HashMap<String, Integer> getZipPopulation() {
+                return null;
+            }
+        };
+        FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(mockData);
+        TreeMap<String, Double> result = processor.run();
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void zipPopulationIsEmpty(){
+        ProjectData mockData = new ProjectData(new ArrayList<>(), new ArrayList<>(), new HashMap<>()) {
+            @Override
+            public HashMap<String, Integer> getZipPopulation() {
+                return new HashMap<>();
+            }
+        };
+        FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(mockData);
+        TreeMap<String, Double> result = processor.run();
+        assertTrue(result.isEmpty());
+    }
+    @Test
+    public void zipCodeIsNull(){
+        ProjectData mockData = new ProjectData(new ArrayList<>(), new ArrayList<>(), new HashMap<>()) {
+            @Override
+            public List<PropertyValue> getPropertyValues() {
+                List<PropertyValue> propertyValues = new ArrayList<>();
+                PropertyValue pv1 = new PropertyValue(125000.0,
+                        1750.0, null);
+                PropertyValue pv2 = new PropertyValue(450000.0,
+                        1800.0, null);
+                propertyValues.add(pv1);
+                propertyValues.add(pv2);
+                return propertyValues;
+            }
+        };
+        FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(mockData);
+        TreeMap<String, Double> result = processor.run();
+        assertTrue(result.isEmpty());
+    }
+    @Test
+    public void zipCodeIsEmpty(){
+        List<ParkingViolation> violations = new ArrayList<>();
+        violations.add(new ParkingViolation("2023-01-01",
+                100.0,
+                "Test",
+                "ABC123",
+                "PA",
+                "V001",
+                ""));
+        ProjectData pd = new ProjectData(
+                violations,
+                null,
+                null
+        );
+        FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(pd);
+        TreeMap<String, Double> result = processor.run();
+        assertTrue(result.isEmpty());
+    }
+    @Test
+    public void zipNotFound(){
+        ProjectData mockData = new ProjectData(new ArrayList<>(), new ArrayList<>(), new HashMap<>()) {
+            @Override
+            public List<PropertyValue> getPropertyValues() {
+                List<PropertyValue> propertyValues = new ArrayList<>();
+                PropertyValue pv1 = new PropertyValue(125000.0,
+                        1750.0, "19103");
+                PropertyValue pv2 = new PropertyValue(450000.0,
+                        1800.0, "19105");
+                propertyValues.add(pv1);
+                propertyValues.add(pv2);
+                return propertyValues;
+            }
+        };
+        FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(mockData);
+        TreeMap<String, Double> result = processor.run();
+        assertTrue(result.isEmpty());
+    }
+    @Test
+    public void stateIsNull(){
+        List<ParkingViolation> violations = new ArrayList<>();
+        violations.add(new ParkingViolation("2023-01-01",
+                100.0,
+                "Test",
+                "ABC123",
+                null,
+                "V001",
+                "19104"));
+        ProjectData pd = new ProjectData(
+                violations,
+                null,
+                null
+        );
+        FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(pd);
+        TreeMap<String, Double> result = processor.run();
+        assertTrue(result.isEmpty());
+    }
+    @Test
+    public void stateIsEmpty(){
+        List<ParkingViolation> violations = new ArrayList<>();
+        violations.add(new ParkingViolation("2023-01-01",
+                100.0,
+                "Test",
+                "ABC123",
+                "",
+                "V001",
+                "19104"));
+        ProjectData pd = new ProjectData(
+                violations,
+                null,
+                null
+        );
+        FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(pd);
+        TreeMap<String, Double> result = processor.run();
+        assertTrue(result.isEmpty());
+    }
+
+
+
+
     // Basic valid calculation
     @Test
     public void testBasicCalculation() {
@@ -71,27 +230,7 @@ public class FinesPerCapitaProcessorTest {
         assertTrue(result.isEmpty());
     }
 
-    //skip empty zip
-    @Test
-    public void testSkipEmptyZip() {
-        ProjectData mockData = new ProjectData(new ArrayList<>(), new ArrayList<>(), new HashMap<>()) {
-            @Override
-            public HashMap<String, Integer> getZipPopulation() {
-                return new HashMap<>();
-            }
-            @Override
-            public List<ParkingViolation> getParkingViolations() {
-                return Arrays.asList(pv(100.0, "PA", ""));
-            }
-        };
-
-        FinesPerCapitaProcessor proc = new FinesPerCapitaProcessor(mockData);
-        TreeMap<String, Double> result = proc.run();
-
-        assertTrue(result.isEmpty());
-    }
-
-    //Skip zero populaiton
+    //Skip zero population
     @Test
     public void testSkipZeroPopulation() {
         ProjectData mockData = new ProjectData(new ArrayList<>(), new ArrayList<>(), new HashMap<>()) {

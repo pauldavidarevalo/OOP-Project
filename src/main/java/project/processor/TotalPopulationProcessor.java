@@ -11,9 +11,10 @@ public class TotalPopulationProcessor {
     }
     public int run() {
         Map<String, Integer> zipPopulationMap = projectData.getZipPopulation();
+        if (zipPopulationMap == null) return 0;
         int result = 0;
-        for (int v : zipPopulationMap.values()) {
-            result += v;
+        for (Integer v : zipPopulationMap.values()) {
+            if (v != null) {result += v;}
         }
         return result;
     }

@@ -17,9 +17,13 @@ public class FinesPerCapitaProcessor {
 
         // Step 1: accumulate total fines per ZIP
         Map<String, Integer> zipPopulation = projectData.getZipPopulation();
+        if (zipPopulation == null) return finesPerCapita;
         Map<String, Double> zipFines = new HashMap<>();
+        List<ParkingViolation> violations = projectData.getParkingViolations();
+        if (violations == null) return finesPerCapita;
 
-        for (ParkingViolation pv : projectData.getParkingViolations()) {
+        for (ParkingViolation pv : violations) {
+            if (pv == null) continue;
             String zip = pv.getZipCode();
             String state = pv.getState();
 
