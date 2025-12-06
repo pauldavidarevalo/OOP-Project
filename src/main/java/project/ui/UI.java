@@ -22,6 +22,12 @@ public class UI {
     }
 
     public void displayMenu() {
+        System.out.println("\nPlease select an option from the menu below by entering the number.");
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // restore interrupt status
+        }
         System.out.println("\nMain Menu:");
         System.out.println("1 - Total population");
         System.out.println("2 - Fines per capita");
@@ -60,6 +66,11 @@ public class UI {
         return Arrays.stream(input.split(","))
                 .map(String::trim)
                 .toArray(String[]::new);
+    }
+
+    public void waitForEnter() {
+        System.out.println("\nPress Enter to continue...");
+        scanner.nextLine();
     }
 
     public int promptForN() {

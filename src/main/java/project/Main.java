@@ -67,6 +67,12 @@ public class Main {
 
             //create Singleton UI class
             UI ui = UI.getInstance();
+            ui.displaySingle("\n*** Welcome to City Open Data Processor! ***", "");
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // restore interrupt status
+            }
 
             /*  Menu Functionality Begins
 
@@ -81,12 +87,14 @@ public class Main {
                         int totalPopulation = totalProcessor.run();
                         ui.displaySingle("\nTotal Population for all zip codes is:",
                                 totalPopulation);
+                        ui.waitForEnter();   // <-- pause here
                         break;
                     case 2:
                         FinesPerCapitaProcessor finesProcessor = new FinesPerCapitaProcessor(pd);
                         Map<String, Double> finesPerCapita = finesProcessor.run();
                         ui.displayPairs("\nFines Per Capita for each zip code:",
                                 finesPerCapita);
+                        ui.waitForEnter();   // <-- pause here
                         break;
                     case 3:
                         AverageMarketValueProcessor avgMarketProcessor = new AverageMarketValueProcessor(pd);
@@ -94,6 +102,7 @@ public class Main {
                         int avgMarketValue = avgMarketProcessor.run(zipArray);
                         ui.displaySingle("\nAverage Residential Market Value for this area is:",
                                 avgMarketValue);
+                        ui.waitForEnter();   // <-- pause here
                         break;
                     case 4:
                         AverageLivableAreaProcessor avgLivableProcessor = new AverageLivableAreaProcessor(pd);
@@ -101,12 +110,14 @@ public class Main {
                         int avgLivableArea = avgLivableProcessor.run(zipLivable);
                         ui.displaySingle("\nAverage Residential Livable Area for this zip code is:",
                                 avgLivableArea);
+                        ui.waitForEnter();   // <-- pause here
                         break;
                     case 5:
                         String zip = ui.getSingleZip();
                         int valuePerCap = marketValuePerCapitaProcessor.run(zip);
                         ui.displaySingle("\nMarket Value Per Capita for this zip code is:",
                                 valuePerCap);
+                        ui.waitForEnter();   // <-- pause here
                         break;
                     case 6:
                         TopNZipCodeByFinesProcessor topNZipProcessor = new TopNZipCodeByFinesProcessor(pd);
@@ -114,12 +125,14 @@ public class Main {
                         List<Map.Entry<String, Double>> topZips = topNZipProcessor.run(N);
                         ui.displayPairs("\nTop Zip Codes by Fines:",
                                 topZips);
+                        ui.waitForEnter();   // <-- pause here
                         break;
                     case 7:
                         PercentageByStateProcessor byStateProcessor = new PercentageByStateProcessor(pd);
                         Map<String, Double> resultByState = byStateProcessor.run();
                         ui.displayPairs("\nPercentage of Fines per state:",
                                 resultByState);
+                        ui.waitForEnter();   // <-- pause here
                         break;
                     case 0:
                         System.out.println("Exiting.");
