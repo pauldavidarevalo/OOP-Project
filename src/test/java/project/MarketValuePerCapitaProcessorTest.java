@@ -288,4 +288,20 @@ public class MarketValuePerCapitaProcessorTest {
         assertEquals(625, result); // (150000 + 250000 + 100000) / 800 = 625
     }
 
+    @Test
+    public void zipIsNull(){
+        ProjectData mockData = new ProjectData(new ArrayList<>(), new ArrayList<>(), new HashMap<>());
+        MarketValuePerCapitaProcessor processor = new MarketValuePerCapitaProcessor(mockData);
+        int result = processor.run(null);
+        assertEquals(0, result);
+    }
+
+    @Test
+    public void zipIsEmpty(){
+        ProjectData mockData = new ProjectData(new ArrayList<>(), new ArrayList<>(), new HashMap<>());
+        MarketValuePerCapitaProcessor processor = new MarketValuePerCapitaProcessor(mockData);
+        int result = processor.run("");
+        assertEquals(0, result);
+    }
+
 }
