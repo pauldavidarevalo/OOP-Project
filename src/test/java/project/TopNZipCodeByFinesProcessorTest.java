@@ -153,6 +153,46 @@ public class TopNZipCodeByFinesProcessorTest {
     }
 
     @Test
+    public void NIsZero(){
+        List<ParkingViolation> violations = new ArrayList<>();
+        violations.add(new ParkingViolation("2023-01-01", 
+                                            100.0, 
+                                            "Test", 
+                                            "ABC123", 
+                                            "PA", 
+                                            "V001", 
+                                            "19104"));
+        ProjectData pd = new ProjectData(
+                violations,
+                null,
+                null
+        );
+        TopNZipCodeByFinesProcessor processor = new TopNZipCodeByFinesProcessor(pd);
+        List<Map.Entry<String, Double>> result = processor.run(0);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void NIsNegative(){
+        List<ParkingViolation> violations = new ArrayList<>();
+        violations.add(new ParkingViolation("2023-01-01", 
+                                            100.0, 
+                                            "Test", 
+                                            "ABC123", 
+                                            "PA", 
+                                            "V001", 
+                                            "19104"));
+        ProjectData pd = new ProjectData(
+                violations,
+                null,
+                null
+        );
+        TopNZipCodeByFinesProcessor processor = new TopNZipCodeByFinesProcessor(pd);
+        List<Map.Entry<String, Double>> result = processor.run(-3);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
     public void validData_1(){
         List<ParkingViolation> violations = new ArrayList<>();
         violations.add(new ParkingViolation("2023-01-01", 

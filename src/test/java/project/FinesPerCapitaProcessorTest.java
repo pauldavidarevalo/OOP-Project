@@ -25,7 +25,7 @@ public class FinesPerCapitaProcessorTest {
         ProjectData pd = new ProjectData(
                 null,
                 null,
-                null
+                new HashMap<>()
         );
         FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(pd);
         TreeMap<String, Double> result = processor.run();
@@ -49,7 +49,7 @@ public class FinesPerCapitaProcessorTest {
         ProjectData pd = new ProjectData(
                 violations,
                 null,
-                null
+                new HashMap<>()
         );
         FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(pd);
         TreeMap<String, Double> result = processor.run();
@@ -82,20 +82,23 @@ public class FinesPerCapitaProcessorTest {
     }
     @Test
     public void zipCodeIsNull(){
-        ProjectData mockData = new ProjectData(new ArrayList<>(), new ArrayList<>(), new HashMap<>()) {
+        List<ParkingViolation> violations = new ArrayList<>();
+        violations.add(new ParkingViolation("2023-01-01",
+                100.0,
+                "Test",
+                "ABC123",
+                "PA",
+                "V001",
+                null));
+        ProjectData pd = new ProjectData(violations, null, new HashMap<>()) {
             @Override
-            public List<PropertyValue> getPropertyValues() {
-                List<PropertyValue> propertyValues = new ArrayList<>();
-                PropertyValue pv1 = new PropertyValue(125000.0,
-                        1750.0, null);
-                PropertyValue pv2 = new PropertyValue(450000.0,
-                        1800.0, null);
-                propertyValues.add(pv1);
-                propertyValues.add(pv2);
-                return propertyValues;
+            public HashMap<String, Integer> getZipPopulation() {
+                HashMap<String, Integer> pop = new HashMap<>();
+                pop.put("19104", 1000);
+                return pop;
             }
         };
-        FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(mockData);
+        FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(pd);
         TreeMap<String, Double> result = processor.run();
         assertTrue(result.isEmpty());
     }
@@ -109,11 +112,14 @@ public class FinesPerCapitaProcessorTest {
                 "PA",
                 "V001",
                 ""));
-        ProjectData pd = new ProjectData(
-                violations,
-                null,
-                null
-        );
+        ProjectData pd = new ProjectData(violations, null, null) {
+            @Override
+            public HashMap<String, Integer> getZipPopulation() {
+                HashMap<String, Integer> pop = new HashMap<>();
+                pop.put("19104", 1000);
+                return pop;
+            }
+        };
         FinesPerCapitaProcessor processor = new FinesPerCapitaProcessor(pd);
         TreeMap<String, Double> result = processor.run();
         assertTrue(result.isEmpty());

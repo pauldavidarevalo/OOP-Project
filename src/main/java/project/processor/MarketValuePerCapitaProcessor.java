@@ -24,6 +24,10 @@ public class MarketValuePerCapitaProcessor {
             return cache.get(zip);
         }
 
+        if (pd == null) {
+            return 0;
+        }
+
         if (pd.getPropertyValues() == null) {
             cache.put(zip, 0);
             return 0;
